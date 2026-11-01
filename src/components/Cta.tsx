@@ -7,8 +7,8 @@ type Variant = 'gold' | 'outline' | 'outlineDark';
 
 const styles: Record<Variant, { box: string; sweep: string; text: string }> = {
   gold: {
-    box: 'bg-gold text-ink',
-    sweep: 'bg-white',
+    box: 'bg-white text-ink',
+    sweep: 'bg-neutral-300',
     text: '',
   },
   outline: {
