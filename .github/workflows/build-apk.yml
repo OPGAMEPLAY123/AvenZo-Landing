@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build web app
+        run: npm run build
+        env:
+          VITE_SHOP_URL: ${{ vars.VITE_SHOP_URL || 'https://store.avenzoopg.in' }}
+          VITE_LOGIN_URL: ${{ vars.VITE_LOGIN_URL || 'https://store.avenzoopg.in' }}
+          VITE_SIGNUP_URL: ${{ vars.VITE_SIGNUP_URL || 'https://store.avenzoopg.in' }}
+          VITE_OPG_URL: ${{ vars.VITE_OPG_URL }}
+          VITE_INSTAGRAM_URL: ${{ vars.VITE_INSTAGRAM_URL }}
+          VITE_X_URL: ${{ vars.VITE_X_URL }}
+          VITE_YOUTUBE_URL: ${{ vars.VITE_YOUTUBE_URL }}
+          VITE_LINKEDIN_URL: ${{ vars.VITE_LINKEDIN_URL }}
+          VITE_CONTACT_EMAIL: ${{ vars.VITE_CONTACT_EMAIL }}
+
+      - name: Add Android platform and sync
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AvenZo-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
